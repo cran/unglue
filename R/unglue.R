@@ -1,6 +1,6 @@
 #' Detect if strings are matched by a set of unglue patterns
 #'
-#' Returns a logical indicating wether input strings were matched by one or more patterns
+#' Returns a logical indicating whether input strings were matched by one or more patterns
 #' @inheritParams  unglue
 #' @return a vector of logical.
 #' @export
@@ -27,7 +27,7 @@ unglue_detect  <- function(
 #' * `unglue_data()` to return a data frame from a character vector,
 #'   just as `glue::glue_data()` does in reverse
 #' * `unglue()` to return a list of data frames containing the matches
-#' * `unglue_vec()` to extract one value by element of `x`, chosen by indice or by
+#' * `unglue_vec()` to extract one value by element of `x`, chosen by index or by
 #'   name.
 #' * `unglue_unnest()` to extract value from a column of a data frame to new columns
 #'
@@ -63,8 +63,9 @@ unglue_detect  <- function(
 #'   the conflicting values as separate arguments. Formula notation
 #'   is supported if the package `rlang` is installed.
 #' @param col column containing the character vector to extract values from.
-#' @param remove wether to remove the column `col` once extraction is performed
+#' @param remove whether to remove the column `col` once extraction is performed
 #' @param var for `unglue_vec()`, the numeric index or the name of the subpattern to extract from
+#' @param na string to use when there is no match
 #' @return For `unglue()`a list of one row data frames, for `unglue_data` a
 #'   data frame, for `unglue_unnest` the data frame input with additional columns
 #'   built from extracted values, for `unglue_vec` an atomic vector.
@@ -107,11 +108,12 @@ unglue  <- function(
 #' @export
 #'
 unglue_data  <- function(
-  x, patterns, open = "{", close = "}", convert = FALSE, multiple = NULL){
+  x, patterns, open = "{", close = "}", convert = FALSE, multiple = NULL,
+  na = NA_character_){
   patterns_regex <- unglue_regex(
     patterns, open = open, close = close, use_multiple = !is.null(multiple),
     named_capture = FALSE, attributes = TRUE)
-  unglue_data0(x, patterns_regex, convert, multiple, output = "data.frame")
+  unglue_data0(x, patterns_regex, convert, multiple, output = "data.frame", na = na)
 }
 
 
@@ -119,33 +121,33 @@ unglue_data  <- function(
 #' @rdname unglue
 #' @export
 unglue_vec  <- function(
-  x, patterns, var = 1, open = "{", close = "}", convert = FALSE, multiple = NULL){
+  x, patterns, var = 1, open = "{", close = "}", convert = FALSE, multiple = NULL, na = NA_character_){
   patterns_regex <- unglue_regex(
     patterns, open = open, close = close, use_multiple = !is.null(multiple),
     named_capture = FALSE, attributes = TRUE)
   if((!is.character(var) && !is.numeric(var)) || length(var) != 1){
     stop("var should be a character or numeric of length 1")
   }
-  unglue_vec0(x, patterns_regex, var, convert = convert)
+  unglue_vec0(x, patterns_regex, var, convert = convert, multiple = multiple, na = na)
 }
 
 
 #' @rdname unglue
 #' @export
-unglue_unnest <- function(data, col, patterns, open = "{", close = "}",remove = TRUE, convert = FALSE){
+unglue_unnest <- function(data, col, patterns, open = "{", close = "}",remove = TRUE, convert = FALSE, multiple = NULL, na = NA_character_){
   # save the attributes of our data.frame, except for the names
   attr_bkp <- attributes(data)
   attr_bkp$names <- NULL
   # use unglue_data on the column whose raw name is fed to `var`
   col <- deparse(substitute(col))
-  ud  <- unglue_data(data[[col]], patterns, open = open, close = close, convert = convert)
+  ud  <- unglue_data(data[[col]], patterns, open = open, close = close, convert = convert, multiple = multiple, na = na)
   # remove this column if relevant
   if(remove) data[[col]] <- NULL
   # bind the source and built datasets together
   res <- cbind(data, ud)
   # make unique names in case of duplicated
   names(res) <- make.unique(names(res))
-  # restore the attibutes
+  # restore the attributes
   attributes(res) <- c(attr_bkp, list(names = names(res)))
   res
 }

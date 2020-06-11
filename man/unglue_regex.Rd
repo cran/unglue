@@ -4,8 +4,14 @@
 \alias{unglue_regex}
 \title{Converts unglue pattern to regular regex pattern}
 \usage{
-unglue_regex(patterns, open = "{", close = "}", use_multiple = FALSE,
-  named_capture = FALSE, attributes = FALSE)
+unglue_regex(
+  patterns,
+  open = "{",
+  close = "}",
+  use_multiple = FALSE,
+  named_capture = FALSE,
+  attributes = FALSE
+)
 }
 \arguments{
 \item{patterns}{a character vector or a list of character vectors, if a list,
@@ -15,20 +21,20 @@ items will be pasted using an empty separator (\code{""}).}
 
 \item{close}{The closing delimiter.}
 
-\item{use_multiple}{wether we should consider that duplicate labels can match
+\item{use_multiple}{whether we should consider that duplicate labels can match
 different substrings.}
 
-\item{named_capture}{wether to incorporate the names of the groups in the
-ouput regex}
+\item{named_capture}{whether to incorporate the names of the groups in the
+output regex}
 
-\item{attributes}{wether to give group attributes to the output}
+\item{attributes}{whether to give group attributes to the output}
 }
 \value{
 a character vector.
 }
 \description{
 Transforms a vector of patterns given in the unglue
-format to a vector of proper  regex (PCRE) patterns (so they can for instance
+format to a vector of proper regex (PCRE) patterns (so they can for instance
 be used with functions from other packages).
 }
 \examples{

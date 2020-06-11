@@ -7,17 +7,40 @@
 \alias{unglue_unnest}
 \title{unglue}
 \usage{
-unglue(x, patterns, open = "{", close = "}", convert = FALSE,
-  multiple = NULL)
+unglue(x, patterns, open = "{", close = "}", convert = FALSE, multiple = NULL)
 
-unglue_data(x, patterns, open = "{", close = "}", convert = FALSE,
-  multiple = NULL)
+unglue_data(
+  x,
+  patterns,
+  open = "{",
+  close = "}",
+  convert = FALSE,
+  multiple = NULL,
+  na = NA_character_
+)
 
-unglue_vec(x, patterns, var = 1, open = "{", close = "}",
-  convert = FALSE, multiple = NULL)
+unglue_vec(
+  x,
+  patterns,
+  var = 1,
+  open = "{",
+  close = "}",
+  convert = FALSE,
+  multiple = NULL,
+  na = NA_character_
+)
 
-unglue_unnest(data, col, patterns, open = "{", close = "}",
-  remove = TRUE, convert = FALSE)
+unglue_unnest(
+  data,
+  col,
+  patterns,
+  open = "{",
+  close = "}",
+  remove = TRUE,
+  convert = FALSE,
+  multiple = NULL,
+  na = NA_character_
+)
 }
 \arguments{
 \item{x}{a character vector to unglue.}
@@ -41,13 +64,15 @@ same will match the same value. If a function is provided it will be fed
 the conflicting values as separate arguments. Formula notation
 is supported if the package \code{rlang} is installed.}
 
+\item{na}{string to use when there is no match}
+
 \item{var}{for \code{unglue_vec()}, the numeric index or the name of the subpattern to extract from}
 
 \item{data}{a data frame.}
 
 \item{col}{column containing the character vector to extract values from.}
 
-\item{remove}{wether to remove the column \code{col} once extraction is performed}
+\item{remove}{whether to remove the column \code{col} once extraction is performed}
 }
 \value{
 For \code{unglue()}a list of one row data frames, for \code{unglue_data} a
@@ -65,18 +90,18 @@ Depending on the task you might want:
 \item \code{unglue_data()} to return a data frame from a character vector,
 just as \code{glue::glue_data()} does in reverse
 \item \code{unglue()} to return a list of data frames containing the matches
-\item \code{unglue_vec()} to extract one value by element of \code{x}, chosen by indice or by
+\item \code{unglue_vec()} to extract one value by element of \code{x}, chosen by index or by
 name.
 \item \code{unglue_unnest()} to extract value from a column of a data frame to new columns
 }
 
 To build the relevant regex pattern special characters will be escaped in the
-input pattern and the subpatterns will be replaced with \code{(.*?)} if in standard
+input pattern and the subpatterns will be replaced with \verb{(.*?)} if in standard
 \code{"{foo}"} form. An alternate regular expression can be provided after \code{=} so that
-\code{"{foo=\\d}"} will be translated into \code{"(\\d)"}.
+\code{"{foo=\\\\d}"} will be translated into \code{"(\\\\d)"}.
 
 Sometimes we might want to use regex to match a part of the text that won't
-be extracted, in these cases we just need to omit the name as in \code{"{=\\d}"}.
+be extracted, in these cases we just need to omit the name as in \code{"{=\\\\d}"}.
 
 \code{unglue_unnest()}'s name is a tribute to \code{tidyr::unnest()} because
 \code{unglue_unnest(data, col, patterns)} returns a similar output as

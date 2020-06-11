@@ -14,15 +14,17 @@ test_that("unglue_vec works", {
                c(666, NA, 42, NA))
   expect_equal(unglue_vec(sentences, patterns, "number", convert = type.convert),
                c(666, NA, 42, NA))
-  expect_equal(unglue_vec(sentences, patterns, "number", convert = ~type.convert(.)),
+  expect_equal(unglue_vec(sentences, patterns, "number", convert = ~type.convert(., as.is = FALSE)),
                c(666, NA, 42, NA))
   expect_error(
       with_mock(requireNamespace = function(...) FALSE,
-                unglue_vec(sentences, patterns, "number", convert = ~type.convert(.)),
+                unglue_vec(sentences, patterns, "number", convert = ~type.convert(., as.is = FALSE)),
                 "rlang"))
   expect_error(unglue_vec(sentences, patterns, c("number","word")))
   expect_equal(unglue_vec(sentences, patterns, 3),
                rep(NA_character_,4))
-
-  debugonce(unglue_vec0)
+  s <- c("random.0.0.word.1.0", "different.0.02.words.15.6", "different.0.1.words.4.2")
+  expect_equal(
+    unglue_vec(s, "{=.*?}.{x}.{x}.{=.*?}.{=.*?}.{=.*?}", multiple = ~paste(..., sep = ".")),
+    c("0.0", "0.02", "0.1"))
 })

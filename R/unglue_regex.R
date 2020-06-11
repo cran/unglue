@@ -1,15 +1,15 @@
 #' Converts unglue pattern to regular regex pattern
 #'
 #' Transforms a vector of patterns given in the unglue
-#' format to a vector of proper  regex (PCRE) patterns (so they can for instance
+#' format to a vector of proper regex (PCRE) patterns (so they can for instance
 #' be used with functions from other packages).
 #'
 #' @inheritParams  unglue
-#' @param use_multiple wether we should consider that duplicate labels can match
+#' @param use_multiple whether we should consider that duplicate labels can match
 #'   different substrings.
-#' @param named_capture wether to incorporate the names of the groups in the
-#'   ouput regex
-#' @param attributes wether to give group attributes to the output
+#' @param named_capture whether to incorporate the names of the groups in the
+#'   output regex
+#' @param attributes whether to give group attributes to the output
 #'
 #' @export
 #' @return a character vector.
@@ -32,7 +32,10 @@ unglue_regex <- function(
   open1 <- regex_escape(open)
   close1 <- regex_escape(close)
   # define pattern which will help extract the content of our brackets
-  bracket_pattern <- paste0(open1,"(?>[^",open,close,"]|(?R))*", close1)
+  # we need to order the brackets in the character class to sort out the special
+  # case of the `]` bracket
+  open_close <- paste(c(open,close)[order(c(open,close) != "]")], collapse="")
+  bracket_pattern <- paste0(open1,"(?>[^",open_close,"]|(?R))*", close1)
   # matched will be a list containing for each pattern
   # the starting position of matches (in a vector) and the matches length (as attributes)
   matched <- gregexpr(bracket_pattern, patterns, perl = TRUE)
